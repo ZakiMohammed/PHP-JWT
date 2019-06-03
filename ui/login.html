@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+    <title>Login | PHP JWT</title>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://bootswatch.com/4/lumen/bootstrap.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  </head>
+  <body>
+
+    <div id="header"></div>
+    
+    <div class="container pt-5 mt-5">
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>Login Page</h4>
+                <div class="form-group">
+                  <label for="txtUserName">User Name</label>
+                  <input type="text" name="txtUserName" id="txtUserName" class="form-control" placeholder="Enter User Name">                  
+                </div>
+                <div class="form-group">
+                    <label for="txtPassword">Password</label>
+                    <input type="password" name="txtPassword" id="txtPassword" class="form-control" placeholder="Enter Password">                  
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" onclick="submit();">Submit</button>                    
+                </div>
+                <div class="form-group">
+                    <div id="alert" class="alert alert-light d-none" role="alert"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="js/header.js"></script>
+    <script>
+
+        $(function () { 
+            let storage = localStorage.getItem('php_jwt');
+            if (storage) {
+                window.location = 'index.html';
+            }
+         });
+
+         function submit() {
+             
+            let userName = $('#txtUserName').val();
+            let password = $('#txtPassword').val();
+
+            if (!userName || !password) {
+                $('#alert').html(`<b>ERROR!<b> Please fill the form`);
+                return;
+            }
+
+            let dto = {
+                user_name: userName,
+                password: password
+            }
+
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                url: 'http://172.16.1.161:8081/study/jwt/api/login.php',
+                dataType: 'json',
+                data: JSON.stringify(dto),
+                beforeSend: function () {
+                    $('#alert').removeClass('d-none');
+                    $('#alert').html(`Loading please wait`);
+                },
+                success: function (result) {
+
+                    var data = result;
+
+                    if (data.status) {
+                        localStorage.setItem('php_jwt', data.jwt);
+                        window.location = 'index.html';
+                    }
+                    else {
+                        $('#alert').html(`<b>ERROR!</b> ${data.message}`);
+                    }
+                },
+                error: function (result) {
+                    $('#alert').html(`<b>ERROR!<b> Something went wrong`);
+                }
+            });
+         }
+
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+    <title>Profile | PHP JWT</title>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://bootswatch.com/4/lumen/bootstrap.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  </head>
+  <body>
+
+    <div id="header"></div>
+    
+    <div class="container pt-5 mt-5">
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Profile Page</h4>
+                <div id="alert" class="alert alert-light d-none" role="alert"></div>
+                <ul class="list-group">
+                    <li class="list-group-item text-center text-primary"><i class="fas fa-user-secret fa-6x"></i></li>
+                    <li class="list-group-item">First Name: <span id="lblFirstName"></span></li>
+                    <li class="list-group-item">Last Name: <span id="lblLastName"></span></li>
+                    <li class="list-group-item">User Name: <span id="lblUserName"></span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="js/header.js"></script>
+    <script>
+
+        $(function () { 
+            let storage = localStorage.getItem('php_jwt');
+            if (!storage) {
+                window.location = 'index.html';
+            } else {
+                
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    url: 'http://172.16.1.161:8081/study/jwt/api/profile.php',
+                    dataType: 'json',
+                    headers: {
+                        "Authorization": storage
+                    },
+                    beforeSend: function () {
+                        $('#alert').removeClass('d-none');
+                        $('#alert').html(`Loading please wait`);
+                    },
+                    success: function (result) {
+
+                        $('#alert').addClass('d-none');
+
+                        if (result.status) {
+                            $('#lblFirstName').text(result.data.first_name);
+                            $('#lblLastName').text(result.data.last_name);
+                            $('#lblUserName').text(result.data.user_name);
+                        }
+                        else {
+                            $('#alert').html(`<b>ERROR!</b> ${data.message}`);
+                        }
+                    },
+                    error: function (result) {
+                        $('#alert').html(`<b>ERROR!<b> Something went wrong`);
+                    }
+                });
+
+            }
+         });
+         
+    </script>
+
+  </body>
+</html>
